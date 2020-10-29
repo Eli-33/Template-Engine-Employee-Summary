@@ -7,14 +7,14 @@ const fs = require("fs");
 const util = require("util");
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
-// const outputPath = path.join(OUTPUT_DIR, "team.html");
-
+const outputPath = path.join(OUTPUT_DIR, "team.html");
 const render = require("./lib/htmlRenderer");
+const { assert } = require("console");
 const writeFileAsync = util.promisify(fs.writeFile);
 
 const teamMembers = [];
 
-function promptForUser(){
+async function promptForUser(){
     return inquirer.prompt([
         {
             type: "list",
@@ -28,7 +28,7 @@ function promptForUser(){
           },
     ]);
 }
- function managerQuestions() {
+async function managerQuestions() {
      return inquirer.prompt([
         {
             type : "input",
@@ -42,6 +42,11 @@ function promptForUser(){
             }
         },
         {
+            type: "input",
+            name: "id",
+            message: "What is the Manager's ID?",
+        },  
+        {
            type: "input",
            name: "email",
            message: "Enter manager's email:",
@@ -51,15 +56,11 @@ function promptForUser(){
            name: "officeNum",
            message: "Enter office number:", 
         },
-        {
-            type: "input",
-            name: "id",
-            message: "What is the Manager's ID?",
-        },  
+       
      ]);
  } 
     
-function EngineerQuestions() {
+async function EngineerQuestions() {
          return inquirer.prompt([
             {
                 type: "input",
@@ -74,14 +75,14 @@ function EngineerQuestions() {
             },
             {
                 type: "input",
-                name: "email",
-                message: "Enter their email:",
-             
+                name: "id",
+                message: "What is your Engineer's ID?",
             },
             {
                 type: "input",
-                name: "id",
-                message: "What is your Engineer's ID?",
+                name: "email",
+                message: "Enter their email:",
+             
             },
             {
                 type: "input",
@@ -96,7 +97,7 @@ function EngineerQuestions() {
             },
          ]);
         } 
-function internQuestions(){
+async function internQuestions(){
     return inquirer.prompt([
         {
             type: "input",
@@ -111,13 +112,13 @@ function internQuestions(){
         },
         {
             type: "input",
-            name: "email",
-            message: "Enter their email:",
+            name: "id",
+            message: "What is your intern's ID?",
         },
         {
             type: "input",
-            name: "id",
-            message: "What is your Engineer's ID?",
+            name: "email",
+            message: "Enter their email:",
         },
         {
              type: "input",
@@ -136,14 +137,13 @@ function internQuestions(){
     
 async function init() {
     try {
-        const managerINFO = await managerQuestions();
+        const manager = await managerQuestions();
         // new manager
     const newManager = new Manager(
-        managerINFO.Mname,
-        managerINFO.id,
-        managerINFO.email,
-        managerINFO.officeNum,
-        teamMembers.length +1
+        manager.Mname,
+        manager.id,
+        manager.email,
+        manager.officeNum,
       );
       teamMembers.push(newManager);
       createNewTeamMember();
@@ -161,7 +161,6 @@ async function createNewTeamMember() {
           newEngineerInfo.email,
           newEngineerInfo.id,
           newEngineerInfo.github,
-          teamMembers.length +1
         );
         teamMembers.push(newEngineer);
         createNewTeamMember();
@@ -173,45 +172,39 @@ async function createNewTeamMember() {
           newInternInfo.id,
           newInternInfo.email,
           newInternInfo.school,
-          teamMembers.length +1
         );
         teamMembers.push(newIntern);
         createNewTeamMember();
         break;
-      
-        
-    }
-    // generate HTML and save to the disk  
-    console.log(teamMembers);
-    BuiltHTML(teamMembers);
-    
-  
+        default:
+          // generate HTML and save to the disk
+          BuiltHTML(teamMembers);
+          console.log("success");
   }
-
+  console.log(teamMembers);
+}
   function BuiltHTML(teamMembers) {
         console.log(teamMembers);
-        let HTML = render(teamMembers);
-     // before writing ensure the output directory exists
-     let folder = fs.existsSync(OUTPUT_DIR);
-     if (!folder) {
-         // doesn't exist so create        
-         folder = (fs.mkdirSync(OUTPUT_DIR, { recursive: true }) !== "");
+        let html = render(teamMembers);
+         let checkF = fs.existsSync(OUTPUT_DIR);
+         if (!checkF) {       
+             checkF = (fs.mkdirSync(OUTPUT_DIR, { recursive: true }) !== "");
+         }
+ 
+         if (checkF) {
+             writeFileAsync(`${OUTPUT_DIR}/team.html`, html)
+                 .then(() => {
+                     console.log(`Successfully created team : ${OUTPUT_DIR}/team.html`);
+                     process.exit(0);
+                 })
+                 .catch(() => {
+                     console.log(`Unable to save webpage file at : ${OUTPUT_DIR}/team.html`);
+                     process.exit(0);
+                 });
+         } else {
+             console.log('Unable to create output.');
+         }
      }
-    
-     if (folder) {
-         // and finally save the html
-         writeFileAsync(`${OUTPUT_DIR}/team.html`, HTML)
-             .then(() => {
-                 console.log(`Successfully created team webpage at : ${OUTPUT_DIR}/team.html`);
-                 process.exit(0);
-             })
-             .catch(() => {
-                 console.log(`Unable to save webpage file at : ${OUTPUT_DIR}/team.html`);
-                 process.exit(0);
-             });
-     } else {
-         console.log('Unable to create output directory. The team.html file was not saved.');
-     }
-    }
+ 
     
   init();
