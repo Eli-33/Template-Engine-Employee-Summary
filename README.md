@@ -26,10 +26,11 @@
    Elahe Jamshidi
 
   ## Images
-  [Images If Available](https://photos.google.com/photo/AF1QipOKLrSf5bB-DXiPfccZFciTCmzuYMFOMeIqVq5D)
-  
+  ![Screenshot 1](https://github.com/Eli-33/Template-Engine-Employee-Summary/blob/main/ScreenShots/The%20page.PNG)
+  ![Screenshot 1](https://github.com/Eli-33/Template-Engine-Employee-Summary/blob/main/ScreenShots/Code.PNG)
   ## Video
-  [Video If Available](https://photos.google.com/album/AF1QipPo62Cyo4ptLvZ4otynxfIHEEiMGwgE-Fw9YQBr/photo/AF1QipNQVnsJrHmeNXraqyFvvRNJh87-KO_nQWvMzOT_)
+  ![Gif](https://github.com/Eli-33/Template-Engine-Employee-Summary/blob/main/Building%20a%20Team%20APP.gif)
+
 
   ## Test
   Insert your tests sample here...
