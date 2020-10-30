@@ -9,7 +9,6 @@ const util = require("util");
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 const render = require("./lib/htmlRenderer");
-const { assert } = require("console");
 const writeFileAsync = util.promisify(fs.writeFile);
 
 const teamMembers = [];
@@ -184,15 +183,14 @@ async function createNewTeamMember() {
   console.log(teamMembers);
 }
   function BuiltHTML(teamMembers) {
-        console.log(teamMembers);
-        let html = render(teamMembers);
-         let checkF = fs.existsSync(OUTPUT_DIR);
-         if (!checkF) {       
-             checkF = (fs.mkdirSync(OUTPUT_DIR, { recursive: true }) !== "");
+        let HTML = render(teamMembers);
+         let existingFile = fs.existsSync(OUTPUT_DIR);
+         if (!existingFile) {       
+             existingFile = (fs.mkdirSync(OUTPUT_DIR, { recursive: true }) !== "");
          }
  
-         if (checkF) {
-             writeFileAsync(`${OUTPUT_DIR}/team.html`, html)
+         if (existingFile) {
+             writeFileAsync(`${OUTPUT_DIR}/team.html`, HTML)
                  .then(() => {
                      console.log(`Successfully created team : ${OUTPUT_DIR}/team.html`);
                      process.exit(0);
